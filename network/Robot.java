@@ -31,13 +31,13 @@ public class Robot {
 				System.out.println("あと" + timeTolive + "回") ;
 				// 10 回に渡り,sleeptime*100ミリ秒おきにleftコマンドを送ります
 				for(int i = 0;i < 10;++i){
-					Thread.sleep(sleeptime * 100) ;
+					Thread.sleep(sleeptime/10) ;
 					out.println("left");
 					out.flush() ;
 				}
 				// 10 回に渡り,sleeptime秒おきにrightコマンドを送ります
 				for(int i = 0;i < 10;++i){
-					Thread.sleep(sleeptime * 100) ;
+					Thread.sleep(sleeptime/10) ;
 					out.println("right");
 					out.flush() ;
 				}

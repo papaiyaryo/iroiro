@@ -30,10 +30,14 @@ public class Robot2 {
 		login(args[0],args[1]) ;
 		try{
 			for(;timeTolive > 0; -- timeTolive){
+				
+
+
+
 				System.out.println("あと" + timeTolive + "回") ;
 				// 10 回に渡り,sleeptime*100ミリ秒おきにleftコマンドを送ります
 				for(int i = 0;i < 10;++i){
-					Thread.sleep(sleeptime * 100) ;
+					Thread.sleep(sleeptime * 1) ;
 					out.println("left");
 					out.println("stat");
 					out.flush();
@@ -51,7 +55,7 @@ public class Robot2 {
 
 				// 10 回に渡り,sleeptime秒おきにrightコマンドを送ります
 				for(int i = 0;i < 10;++i){
-					Thread.sleep(sleeptime * 100) ;
+					Thread.sleep(sleeptime * 1) ;
 					out.println("right");
 					out.println("stat");
 					out.flush();
