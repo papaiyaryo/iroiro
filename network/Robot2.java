@@ -16,63 +16,37 @@
 import java.net.*;// ネットワーク関連
 import java.io.*;
 import java.util.*;
+import java.util.Random;
 
 // Robotクラス
 public class Robot2 {
 	// ロボットの動作タイミングを規定する変数sleeptime
 	int sleeptime = 5 ;
 	// ロボットがlogoutするまでの時間を規定する変数timeTolive
-	int timeTolive = 50 ;
+	int timeTolive = 50000 ;
 	String line;
 	// コンストラクタ
 	public Robot2 (String[] args)
 	{
 		login(args[0],args[1]) ;
+		Random rand = new Random();
 		try{
 			for(;timeTolive > 0; -- timeTolive){
-				
-
-
-
-				System.out.println("あと" + timeTolive + "回") ;
-				// 10 回に渡り,sleeptime*100ミリ秒おきにleftコマンドを送ります
-				for(int i = 0;i < 10;++i){
-					Thread.sleep(sleeptime * 1) ;
-					out.println("left");
-					out.println("stat");
-					out.flush();
-					line = in.readLine();
-					while (!".".equals(line)) {
-						System.out.println(line);
-						line = in.readLine();
-					}
-					line = in.readLine();
-					while (!".".equals(line)) {
-						System.out.println(line);
-						line = in.readLine();
+				while ((line = in.readLine()) != null) {
+					// ゲーム開始のシグナルをチェック
+					if (line.contains("Game Start")) {
+						break; // ゲームが開始したのでループを抜ける
 					}
 				}
+				Thread.sleep(sleeptime) ;
+        		int arraySize = 2; // 配列のサイズ
+        		int[] numbers = new int[arraySize]; // 配列の初期化
 
-				// 10 回に渡り,sleeptime秒おきにrightコマンドを送ります
-				for(int i = 0;i < 10;++i){
-					Thread.sleep(sleeptime * 1) ;
-					out.println("right");
-					out.println("stat");
-					out.flush();
-					line = in.readLine();
-					while (!".".equals(line)) {
-						System.out.println(line);
-						line = in.readLine();
-					}
-					line = in.readLine();
-					while (!".".equals(line)) {
-						System.out.println(line);
-						line = in.readLine();
-					}
-				}
-				// upコマンドを1 回送ります
-				out.println("up");
-				out.println("stat");
+        		// 配列に乱数を格納
+        		for (int i = 0; i < numbers.length; i++) {
+        		    numbers[i] = rand.nextInt(4); // 0から99までの乱数
+        		}
+				moving(numbers);
 				out.flush();
 				line = in.readLine();
 				while (!".".equals(line)) {
@@ -84,6 +58,38 @@ public class Robot2 {
 					System.out.println(line);
 					line = in.readLine();
 				}
+
+				// // 10 回に渡り,sleeptime秒おきにrightコマンドを送ります
+				// for(int i = 0;i < 10;++i){
+				// 	Thread.sleep(sleeptime * 1) ;
+				// 	out.println("right");
+				// 	out.println("stat");
+				// 	out.flush();
+				// 	line = in.readLine();
+				// 	while (!".".equals(line)) {
+				// 		System.out.println(line);
+				// 		line = in.readLine();
+				// 	}
+				// 	line = in.readLine();
+				// 	while (!".".equals(line)) {
+				// 		System.out.println(line);
+				// 		line = in.readLine();
+				// 	}
+				// }
+				// // upコマンドを1 回送ります
+				// out.println("up");
+				// out.println("stat");
+				// out.flush();
+				// line = in.readLine();
+				// while (!".".equals(line)) {
+				// 	System.out.println(line);
+				// 	line = in.readLine();
+				// }
+				// line = in.readLine();
+				// while (!".".equals(line)) {
+				// 	System.out.println(line);
+				// 	line = in.readLine();
+				// }
 			}
 			// logout処理
 			out.println("logout") ;
@@ -119,6 +125,20 @@ public class Robot2 {
 		}catch(Exception e){
 			e.printStackTrace();
 			System.exit(1);
+		}
+	}
+
+	void moving(int[] num){
+		for(int i=0 ; i < num.length ;i++){
+			String move = switch(num[i]){
+				case 1 -> "right";
+				case 2 -> "left";
+				case 3 -> "up";
+				case 0 -> "down";
+				default -> "right";
+			};
+			out.println(move);
+			out.println("stat");
 		}
 	}
 
