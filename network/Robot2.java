@@ -44,7 +44,7 @@ public class Robot2 {
 
         		// 配列に乱数を格納
         		for (int i = 0; i < numbers.length; i++) {
-        		    numbers[i] = rand.nextInt(4); // 0から99までの乱数
+        		    numbers[i] = rand.nextInt(4); // 0から4までの乱数
         		}
 				moving(numbers);
 				out.flush();
