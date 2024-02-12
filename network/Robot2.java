@@ -16,89 +16,121 @@
 import java.net.*;// ネットワーク関連
 import java.io.*;
 import java.util.*;
-import java.util.Random;
+
+class Tank {
+	int x, y, ene;
+
+	Tank(int x, int y, int ene) {
+		this.x = x;
+		this.y = y;
+		this.ene = ene;
+	}
+}
 
 // Robotクラス
 public class Robot2 {
 	// ロボットの動作タイミングを規定する変数sleeptime
 	int sleeptime = 5 ;
-	// ロボットがlogoutするまでの時間を規定する変数timeTolive
-	int timeTolive = 50000 ;
-	String line;
 	// コンストラクタ
 	public Robot2 (String[] args)
 	{
 		login(args[0],args[1]) ;
-		Random rand = new Random();
+		// Random rand = new Random();
+		while(true){
 		try{
-			for(;timeTolive > 0; -- timeTolive){
-				while ((line = in.readLine()) != null) {
-					// ゲーム開始のシグナルをチェック
-					if (line.contains("Game Start")) {
-						break; // ゲームが開始したのでループを抜ける
+			Thread.sleep(500);
+				out.println("stat");
+				out.flush();
+				String line = in.readLine();
+
+				int shipX = 0;
+				int shipY = 0;
+				List<Tank> tanks = new ArrayList<>();
+
+				while (!"ship_info".equalsIgnoreCase(line))
+					line = in.readLine();
+				line = in.readLine();
+				while (!".".equals(line)) {
+					StringTokenizer st = new StringTokenizer(line);
+					String obj_name = st.nextToken().trim();
+					if (obj_name.equals(name)) {
+						shipX = Integer.parseInt(st.nextToken());
+						shipY = Integer.parseInt(st.nextToken());
+						System.out.println("ship infomation: ");
+						System.out.println("" + "name: " + obj_name + " x: " + shipX + " y: " +  shipY);
+					}
+					line = in.readLine();
+				}
+
+				while (!"energy_info".equalsIgnoreCase(line))
+					line = in.readLine();
+				line = in.readLine();
+				while (!".".equals(line)) {
+					StringTokenizer st = new StringTokenizer(line);
+					int x = Integer.parseInt(st.nextToken());
+					int y = Integer.parseInt(st.nextToken());
+					int ene = Integer.parseInt(st.nextToken());
+					tanks.add(new Tank(x, y, ene));
+					System.out.println("enegy position: ");
+					System.out.println("" + "x: " + x + " y: " + y + " point: " + ene);
+					line = in.readLine();
+				}
+
+				Tank targetTank = null;
+				double minDistance = Double.MAX_VALUE;
+				for (Tank tank : tanks) {
+					double distance = Math.sqrt(Math.pow(shipX - tank.x, 2) + Math.pow(shipY - tank.y, 2));
+					if (distance < minDistance) {
+						minDistance = distance;
+						targetTank = tank;
 					}
 				}
-				Thread.sleep(sleeptime) ;
-        		int arraySize = 2; // 配列のサイズ
-        		int[] numbers = new int[arraySize]; // 配列の初期化
 
-        		// 配列に乱数を格納
-        		for (int i = 0; i < numbers.length; i++) {
-        		    numbers[i] = rand.nextInt(4); // 0から4までの乱数
-        		}
-				moving(numbers);
-				out.flush();
-				line = in.readLine();
-				while (!".".equals(line)) {
-					System.out.println(line);
-					line = in.readLine();
-				}
-				line = in.readLine();
-				while (!".".equals(line)) {
-					System.out.println(line);
-					line = in.readLine();
+				// Sort tanks by energy in descending order
+				tanks.sort((Tank a, Tank b) -> b.ene - a.ene);
+
+				if (targetTank == null || (shipX == targetTank.x && shipY == targetTank.y)) {
+					// Sort tanks by energy in descending order
+					tanks.sort((Tank a, Tank b) -> b.ene - a.ene);
+					targetTank = tanks.get(0);
 				}
 
-				// // 10 回に渡り,sleeptime秒おきにrightコマンドを送ります
-				// for(int i = 0;i < 10;++i){
-				// 	Thread.sleep(sleeptime * 1) ;
-				// 	out.println("right");
-				// 	out.println("stat");
-				// 	out.flush();
-				// 	line = in.readLine();
-				// 	while (!".".equals(line)) {
-				// 		System.out.println(line);
-				// 		line = in.readLine();
-				// 	}
-				// 	line = in.readLine();
-				// 	while (!".".equals(line)) {
-				// 		System.out.println(line);
-				// 		line = in.readLine();
-				// 	}
-				// }
-				// // upコマンドを1 回送ります
-				// out.println("up");
-				// out.println("stat");
-				// out.flush();
-				// line = in.readLine();
-				// while (!".".equals(line)) {
-				// 	System.out.println(line);
-				// 	line = in.readLine();
-				// }
-				// line = in.readLine();
-				// while (!".".equals(line)) {
-				// 	System.out.println(line);
-				// 	line = in.readLine();
-				// }
-			}
-			// logout処理
-			out.println("logout") ;
-			out.flush() ;
-			server.close() ;
+				int dx = Math.abs(shipX - targetTank.x);
+				int dy = Math.abs(shipY - targetTank.y);
+
+				if (dx > dy) {
+					if (shipX < targetTank.x) {
+						sendCommand("right");
+					} else {
+						sendCommand("left");
+					}
+					if (shipY < targetTank.y) {
+						sendCommand("up");
+					} else {
+						sendCommand("down");
+					}
+				} else {
+					if (shipY < targetTank.y) {
+						sendCommand("up");
+					} else {
+						sendCommand("down");
+					}
+					if (shipX < targetTank.x) {
+						sendCommand("right");
+					} else {
+						sendCommand("left");
+					}
+				}
+
+				if (shipX == targetTank.x && shipY == targetTank.y) {
+					targetTank = null;
+				}
+
 		}catch(Exception e){
 			e.printStackTrace();
 			System.exit(1);
 		}
+	}
 	}
 
 	// login関連のオブジェクト
@@ -107,6 +139,7 @@ public class Robot2 {
 	BufferedReader in;// 入力ストリーム
 	PrintWriter out;// 出力ストリーム
 	String name;// ゲーム参加者の名前
+
 
 	// loginメソッド
 	// サーバへのlogin処理を行います
@@ -141,6 +174,20 @@ public class Robot2 {
 			out.println("stat");
 		}
 	}
+
+	void sendCommand(String s) {
+		if ("up".equals(s)) {
+			out.println("up");
+		} else if ("down".equals(s)) {
+			out.println("down");
+		} else if ("left".equals(s)) {
+			out.println("left");
+		} else if ("right".equals(s)) {
+			out.println("right");
+		}
+		out.flush();
+	}
+
 
 	// mainメソッド
 	// Robotを起動します
