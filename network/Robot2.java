@@ -48,7 +48,7 @@ public class Robot2 {
 				List<Tank> tanks = new ArrayList<>();
 
 				while (!"ship_info".equalsIgnoreCase(line))
-					line = in.readLine();
+				line = in.readLine();
 				line = in.readLine();
 				while (!".".equals(line)) {
 					StringTokenizer st = new StringTokenizer(line);
@@ -59,11 +59,17 @@ public class Robot2 {
 						System.out.println("ship infomation: ");
 						System.out.println("" + "name: " + obj_name + " x: " + shipX + " y: " +  shipY);
 					}
+
+					// if (tanks == null) {
+					// 	tanks = new ArrayList<>();
+					// 	tanks.add(new Tank(shipX+1,shipY+1, 1));
+					// }
 					line = in.readLine();
 				}
-
+				
+				
 				while (!"energy_info".equalsIgnoreCase(line))
-					line = in.readLine();
+				line = in.readLine();
 				line = in.readLine();
 				while (!".".equals(line)) {
 					StringTokenizer st = new StringTokenizer(line);
@@ -72,10 +78,10 @@ public class Robot2 {
 					int ene = Integer.parseInt(st.nextToken());
 					tanks.add(new Tank(x, y, ene));
 					System.out.println("enegy position: ");
-					System.out.println("" + "x: " + x + " y: " + y + " point: " + ene);
+					System.out.println("" + "(" + x + "," + y + ")" + ene);
 					line = in.readLine();
 				}
-
+								
 				Tank targetTank = null;
 				double minDistance = Double.MAX_VALUE;
 				for (Tank tank : tanks) {
@@ -89,17 +95,18 @@ public class Robot2 {
 				// Sort tanks by energy in descending order
 				tanks.sort((Tank a, Tank b) -> b.ene - a.ene);
 
+				if (!tanks.isEmpty()) {
 				if (targetTank == null || (shipX == targetTank.x && shipY == targetTank.y)) {
-					// Sort tanks by energy in descending order
-					tanks.sort((Tank a, Tank b) -> b.ene - a.ene);
-					targetTank = tanks.get(0);
-				}
-
-				int dx = Math.abs(shipX - targetTank.x);
-				int dy = Math.abs(shipY - targetTank.y);
-
-				if (dx > dy) {
-					if (shipX < targetTank.x) {
+						// Sort tanks by energy in descending order
+						tanks.sort((Tank a, Tank b) -> b.ene - a.ene);
+						targetTank = tanks.get(0);
+					}
+					
+					int dx = Math.abs(shipX - targetTank.x);
+					int dy = Math.abs(shipY - targetTank.y);
+					
+					if (dx > dy) {
+						if (shipX < targetTank.x) {
 						sendCommand("right");
 					} else {
 						sendCommand("left");
@@ -121,10 +128,11 @@ public class Robot2 {
 						sendCommand("left");
 					}
 				}
-
+				
 				if (shipX == targetTank.x && shipY == targetTank.y) {
 					targetTank = null;
 				}
+			}
 
 		}catch(Exception e){
 			e.printStackTrace();
