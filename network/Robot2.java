@@ -77,9 +77,11 @@ public class Robot2 {
 					int y = Integer.parseInt(st.nextToken());
 					int ene = Integer.parseInt(st.nextToken());
 					tanks.add(new Tank(x, y, ene));
-					System.out.println("enegy position: ");
-					System.out.println("" + "(" + x + "," + y + ")" + ene);
 					line = in.readLine();
+				}
+				System.out.println("tanks: ");
+				for (Tank tank : tanks) {
+					System.out.println("(" + tank.x + "," + tank.y + ")" + tank.ene);
 				}
 								
 				Tank targetTank = null;
@@ -92,47 +94,38 @@ public class Robot2 {
 					}
 				}
 
-				// Sort tanks by energy in descending order
-				tanks.sort((Tank a, Tank b) -> b.ene - a.ene);
 
-				if (!tanks.isEmpty()) {
-				if (targetTank == null || (shipX == targetTank.x && shipY == targetTank.y)) {
-						// Sort tanks by energy in descending order
-						tanks.sort((Tank a, Tank b) -> b.ene - a.ene);
-						targetTank = tanks.get(0);
-					}
-					
-					int dx = Math.abs(shipX - targetTank.x);
-					int dy = Math.abs(shipY - targetTank.y);
-					
-					if (dx > dy) {
-						if (shipX < targetTank.x) {
-						sendCommand("right");
-					} else {
-						sendCommand("left");
-					}
-					if (shipY < targetTank.y) {
-						sendCommand("up");
-					} else {
-						sendCommand("down");
-					}
-				} else {
-					if (shipY < targetTank.y) {
-						sendCommand("up");
-					} else {
-						sendCommand("down");
-					}
-					if (shipX < targetTank.x) {
-						sendCommand("right");
-					} else {
-						sendCommand("left");
-					}
+				// タンクが空でないかつターゲットがnull、または現在位置にある場合、新しいターゲットを選択
+				if (!tanks.isEmpty() && (targetTank == null || (shipX == targetTank.x && shipY == targetTank.y))) {
+				    // タンクをエネルギー量で降順にソート
+				    tanks.sort((Tank a, Tank b) -> b.ene - a.ene);
+				    targetTank = tanks.get(0); // 最もエネルギーが多いタンクを選択
 				}
-				
+
+				// ターゲットが設定されている場合のみ移動処理を実行
+				if (targetTank != null) {
+				    // X軸とY軸の差を計算
+				    int dx = shipX - targetTank.x;
+				    int dy = shipY - targetTank.y;
+					
+					for(int i=0; i < 2; i++){
+				    // 最も短い距離で移動する方向を選択
+				if (Math.abs(dx) > Math.abs(dy)) {
+					// X軸の差が大きい場合、X軸方向に移動
+					sendCommand(dx > 0 ? "left" : "right");
+				} else if (Math.abs(dy) > 0) {
+					// Y軸の差が大きい、または等しい場合、Y軸方向に移動
+					sendCommand(dy > 0 ? "down" : "up");
+				}
+
+				// ターゲットに到達したかどうかをチェックし、到達していればターゲットをクリア
 				if (shipX == targetTank.x && shipY == targetTank.y) {
 					targetTank = null;
+					break;
 				}
-			}
+					}
+				}
+
 
 		}catch(Exception e){
 			e.printStackTrace();
